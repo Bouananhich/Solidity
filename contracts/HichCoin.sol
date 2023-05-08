@@ -55,6 +55,9 @@ contract HichCoin {
 
     function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
         require(allowances[_from][_to] >= _value, "Insufficient allowance");
+        require(balances[_from] >= _value, "Insufficient funds");
+        balances[_from] -= _value;
+        balances[_to] += _value;
         allowances[_from][_to] -= _value;
         return true;
     }
