@@ -1,11 +1,11 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.18;
 
 contract HichCoin {
 
     address public contract_owner;
     mapping(address => uint) public balances;
-    mapping(address => uint256) public allowances;
+    mapping(address => mapping(address => uint)) public allowances;
 
     constructor() {
         contract_owner = msg.sender;
@@ -37,10 +37,25 @@ contract HichCoin {
         contract_owner = new_owner;
     }
 
-    function transfer(address _to, uint _value) public returns (bool success){
+    function transfer(address _to, uint _value) public returns (bool){
         require(this.balanceOf(msg.sender)>= _value, "Insufficient balance");
         balances[_to] += _value;
         balances[msg.sender] -= _value;
-        return success;
+        return true;
+    }
+
+    function approve(address _spender, uint256 _value) public returns (bool){
+        allowances[msg.sender][_spender] = _value;
+        return true;
+    }
+
+    function allowance(address _owner, address _spender) public view returns (uint256 remaining){
+        return allowances[_owner][_spender];
+    }
+
+    function transferFrom(address _from, address _to, uint256 _value) public returns(bool){
+        require(allowances[_from][_to] >= _value, "Insufficient allowance");
+        allowances[_from][_to] -= _value;
+        return true;
     }
 }
